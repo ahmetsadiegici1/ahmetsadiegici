@@ -55,7 +55,7 @@ public class Map
         if (int.TryParse(Console.ReadLine(), out int playerAge))
         {
             Console.WriteLine(playerAge < 18
-                ? "Ölmek için çok gençmişs, başarılar! Sana bir ipucu : 'bir geri iki ileri' :)"
+                ? "Ölmek için çok gençsin, başarılar! Sana bir ipucu : 'bir geri iki ileri' :)"
                 : "Harika! Oyun başlıyor. Sana bir ipucu : 'bir geri iki ileri' ");
         }
         else
