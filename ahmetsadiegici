@@ -43,7 +43,7 @@ public class Map
         _locations.Add(keyLocation);
         _locations.Add(questionLocation);
 
-        Console.WriteLine("Gotham City'ye hoş geldiniz!");
+        Console.WriteLine($"Gotham City'ye hoş geldiniz!");
 
         Console.WriteLine("Dünya'ya dönmek için bir anahtara ihtiyacın var. Onu bulmadan buradan kurtulamazsın.");
         Console.WriteLine("Anahtarı bulmak için çevreyi keşfet ve 'Anahtar Konumu'na git.");
@@ -51,11 +51,11 @@ public class Map
         Console.Write("Adın nedir? ");
         string playerName = Console.ReadLine();
 
-        Console.Write("Memnun oldum, yaşın kaç, {playerName}? ");
+        Console.Write($"Memnun oldum, yaşın kaç, {playerName}? ");
         if (int.TryParse(Console.ReadLine(), out int playerAge))
         {
             Console.WriteLine(playerAge < 18
-                ? "Ölmek için çok gençsin, başarılar! Sana bir ipucu : 'bir geri iki ileri' :)"
+                ? $"Ölmek için çok gençmişs, başarılar! Sana bir ipucu : 'bir geri iki ileri' :)"
                 : "Harika! Oyun başlıyor. Sana bir ipucu : 'bir geri iki ileri' ");
         }
         else
@@ -79,7 +79,7 @@ public class Map
         _coordinates[0] = newXCoordinate;
         _coordinates[1] = newYCoordinate;
 
-        Console.WriteLine("Şu anda {_coordinates[0]}, {_coordinates[1]} konumundasınız.");
+        Console.WriteLine($"Şu anda {_coordinates[0]}, {_coordinates[1]} konumundasınız.");
 
        
         CheckSpecialLocation();
@@ -149,7 +149,7 @@ public class Map
                 }
                 else if (attempt < maxWrongAttempts)
                 {
-                    Console.WriteLine("Yanlış cevap. {maxWrongAttempts - attempt} hakkınız kaldı. Tekrar deneyin.");
+                    Console.WriteLine($"Yanlış cevap. {maxWrongAttempts - attempt} hakkınız kaldı. Tekrar deneyin.");
                 }
                 else
                 {
