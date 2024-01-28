@@ -1,0 +1,209 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+
+public class Location
+{
+    public string Name { get; private set; }
+    public Vector2 Coordinates { get; private set; }
+
+    public Location(string locationName, Vector2 coordinates)
+    {
+        Name = locationName;
+        Coordinates = coordinates;
+    }
+
+
+}
+
+public class Map
+{
+    private int[] _coordinates;
+    private int[] _widthBoundaries;
+    private int[] _heightBoundaries;
+    private List<Location> _locations;
+    private bool _hasKey = false;
+    private bool _goblinMet = false;
+
+    public Map(int width, int height)
+    {
+        int widthBoundary = (width - 1) / 2;
+        _widthBoundaries = new int[2] { -widthBoundary, widthBoundary };
+
+        int heightBoundary = (height - 1) / 2;
+        _heightBoundaries = new int[2] { -heightBoundary, heightBoundary };
+
+        _coordinates = new int[2] { 0, 0 };
+        _locations = new List<Location>();
+
+        Location startPoint = new Location("Start Point", new Vector2(0, 0));
+        Location keyLocation = new Location("Anahtar Konumu", new Vector2(-1, 2));
+        Location questionLocation = new Location("Question Location", new Vector2(2, 2));
+        _locations.Add(startPoint);
+        _locations.Add(keyLocation);
+        _locations.Add(questionLocation);
+
+        Console.WriteLine($"Gotham City'ye hoş geldiniz!");
+
+        Console.WriteLine("Dünya'ya dönmek için bir anahtara ihtiyacın var. Onu bulmadan buradan kurtulamazsın.");
+        Console.WriteLine("Anahtarı bulmak için çevreyi keşfet ve 'Anahtar Konumu'na git.");
+
+        Console.Write("Adın nedir? ");
+        string playerName = Console.ReadLine();
+
+        Console.Write($"Memnun oldum, yaşın kaç, {playerName}? ");
+        if (int.TryParse(Console.ReadLine(), out int playerAge))
+        {
+            Console.WriteLine(playerAge < 18
+                ? $"Ölmek için çok gençmişs, başarılar! Sana bir ipucu : 'bir geri iki ileri' :)"
+                : "Harika! Oyun başlıyor. Sana bir ipucu : 'bir geri iki ileri' ");
+        }
+        else
+        {
+            Console.WriteLine("Yaşınızı anlayamadım, başarılar! Sana bir ipucu : 'bir geri iki ileri' ");
+            Environment.Exit(0);
+        }
+    }
+
+    public void MovePlayer(int x, int y)
+    {
+        int newXCoordinate = _coordinates[0] + x;
+        int newYCoordinate = _coordinates[1] + y;
+
+        if (!CanMoveTo(newXCoordinate, newYCoordinate))
+        {
+            Console.WriteLine("Bu yöne gidemezsiniz.");
+            return;
+        }
+
+        _coordinates[0] = newXCoordinate;
+        _coordinates[1] = newYCoordinate;
+
+        Console.WriteLine($"Şu anda {_coordinates[0]}, {_coordinates[1]} konumundasınız.");
+
+
+        CheckSpecialLocation();
+    }
+
+    private bool CanMoveTo(int x, int y)
+    {
+        return !(x < _widthBoundaries[0] || x > _widthBoundaries[1] || y < _heightBoundaries[0] || y > _heightBoundaries[1]);
+    }
+
+    private void CheckSpecialLocation()
+    {
+        foreach (var location in _locations)
+        {
+            if (_coordinates[0] == (int)location.Coordinates.X && _coordinates[1] == (int)location.Coordinates.Y)
+            {
+                if (location.Name == "Anahtar Konumu" && !_hasKey)
+                {
+                    Console.WriteLine("Dünya'ya dönüş için gerekli anahtarı buldunuz. Keşfetmeye devam edin.");
+                    _hasKey = true;
+                }
+                else if (location.Name == "Question Location" && !_goblinMet && _hasKey)
+                {
+                    Console.WriteLine("Bir goblinle karşılaştınız!");
+                    _goblinMet = true;
+                    AskQuestion();
+                }
+                else if (location.Name == "Question Location" && _goblinMet && _hasKey)
+                {
+                    AskQuestion();
+                }
+                break;
+            }
+        }
+    }
+
+    private void AskQuestion()
+    {
+        Console.WriteLine("Hoşgeldin Dünyalı, istediğim anahtarı getirmişsin. Eğer az sonra soracağım soruyu da doğru cevaplarsan Dünya'ya geri dönebilirsin. Unutma sadece 1 yanlış hakkın var!:");
+        Console.WriteLine("Asamın ve şapkamın toplam fiyatı 110 liradır. Asam şapkamdan 100 lira daha pahalıdır. Bu durumda şapka kaç liradır?");
+
+        Console.WriteLine("Şıklar:");
+        Console.WriteLine("A) 10");
+        Console.WriteLine("B) 20");
+        Console.WriteLine("C) 90");
+        Console.WriteLine("D) 30");
+        Console.WriteLine("E) 5");
+
+        int maxWrongAttempts = 1;
+
+        for (int attempt = 1; attempt <= maxWrongAttempts + 1; attempt++)
+        {
+            Console.Write("Cevabınızı girin: ");
+            string playerAnswer = Console.ReadLine().ToUpper();
+
+            if (playerAnswer == "E")
+            {
+                Console.WriteLine("Tebrikler, doğru cevap! Oyunu kazandınız.");
+                EndGame(true);
+                return;
+            }
+            else
+            {
+                if (attempt == maxWrongAttempts)
+                {
+                    Console.WriteLine("Son hakkınız! Dikkatlice düşün ve tekrar deneyin.");
+                }
+                else if (attempt < maxWrongAttempts)
+                {
+                    Console.WriteLine($"Yanlış cevap. {maxWrongAttempts - attempt} hakkınız kaldı. Tekrar deneyin.");
+                }
+                else
+                {
+                    Console.WriteLine("Maalesef, yanlış cevap. Goblin tarafından öldürüldünüz.");
+                    EndGame(false);
+                }
+            }
+        }
+    }
+
+    private void EndGame(bool isWinner)
+    {
+        if (isWinner)
+        {
+            Console.WriteLine("Tebrikler, kazandınız!");
+        }
+        else
+        {
+            Console.WriteLine("Üzgünüm, kaybettiniz. Başka sefere!");
+        }
+
+        Environment.Exit(0);
+    }
+}
+
+internal class Starter
+{
+    private static void Main(string[] args)
+    {
+        Map gameMap = new Map(5, 5);
+
+        while (true)
+        {
+            Console.Write("Yön seçin (W, A, S, D): ");
+            string direction = Console.ReadLine().ToUpper();
+
+            switch (direction)
+            {
+                case "W":
+                    gameMap.MovePlayer(0, 1);
+                    break;
+                case "S":
+                    gameMap.MovePlayer(0, -1);
+                    break;
+                case "A":
+                    gameMap.MovePlayer(-1, 0);
+                    break;
+                case "D":
+                    gameMap.MovePlayer(1, 0);
+                    break;
+                default:
+                    Console.WriteLine("Geçersiz yönlendirme.");
+                    break;
+            }
+        }
+    }
+}
